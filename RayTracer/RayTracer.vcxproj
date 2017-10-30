@@ -114,12 +114,14 @@
     <ClInclude Include="parser.h" />
     <ClInclude Include="ppm.h" />
     <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.cpp" />
     <ClCompile Include="ppm.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\Desktop\raytracer\hw1_sample_outputs\bunny.ppm" />
