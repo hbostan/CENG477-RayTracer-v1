@@ -5,10 +5,10 @@ class Vec3f {
 public:
 	float x, y, z;
 
-	Vec3f();
-	Vec3f(const Vec3f& other) :x(other.x), y(other.y), z(other.z) {};
-	Vec3f(float x, float y, float z) : x(x), y(y), z(z) {};
-	Vec3f(float d) :x(d), y(d), z(d) {};
+	Vec3f() :x(0.0f), y(0.0f), z(0.0f) {}
+	Vec3f(const Vec3f& other) :x(other.x), y(other.y), z(other.z) {}
+	Vec3f(float x, float y, float z) : x(x), y(y), z(z) {}
+	Vec3f(float d) :x(d), y(d), z(d) {}
 
 	float length();
 	float sqrLength();
@@ -34,10 +34,10 @@ class Vec3i {
 public:
 	int x, y, z;
 
-	Vec3i();
-	Vec3i(const Vec3i& other) :x(other.x), y(other.y), z(other.z) {};
-	Vec3i(int x, int y, int z) : x(x), y(y), z(z) {};
-	Vec3i(int d) :x(d), y(d), z(d) {};
+	Vec3i():x(0),y(0),z(0) {}
+	Vec3i(const Vec3i& other) :x(other.x), y(other.y), z(other.z) {}
+	Vec3i(int x, int y, int z) : x(x), y(y), z(z) {}
+	Vec3i(int d) :x(d), y(d), z(d) {}
 
 	float length();
 	int sqrLength();
@@ -58,5 +58,6 @@ public:
 };
 
 class Vec4f {
+public:
 	float x, y, z, w;
 };

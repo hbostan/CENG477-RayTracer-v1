@@ -156,3 +156,4 @@ int Vec3i::dot(Vec3i v)
 Vec3i Vec3i::cross(Vec3i v)
 {
 	return Vec3i((y*v.z - z*v.y), (z*v.x - x*v.z), (x*v.y - y*v.x));
+}
