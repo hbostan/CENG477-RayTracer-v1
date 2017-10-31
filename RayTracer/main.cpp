@@ -1,5 +1,6 @@
 #include <iostream>
 #include "parser.h"
+#include <vector>
 #include "ppm.h"
 
 typedef unsigned char RGB[3];
@@ -9,7 +10,7 @@ int main(int argc, char* argv[])
 	// Sample usage for reading an XML scene file
 	parser::Scene scene;
 
-	//scene.loadFromXml(argv[1]);
+	scene.loadFromXml(argv[1]);
 
 	// The code below creates a test pattern and writes
 	// it to a PPM file to demonstrate the usage of the
@@ -30,20 +31,23 @@ int main(int argc, char* argv[])
 	int width = 640, height = 480;
 	int columnWidth = width / 8;
 
-	unsigned char* image = new unsigned char[width * height * 3];
+	cout << "hebele" << endl;
 
-	int i = 0;
-	for (int y = 0; y < height; ++y)
-	{
-		for (int x = 0; x < width; ++x)
-		{
-			int colIdx = x / columnWidth;
-			image[i++] = BAR_COLOR[colIdx][0];
-			image[i++] = BAR_COLOR[colIdx][1];
-			image[i++] = BAR_COLOR[colIdx][2];
-		}
-	}
+	scene.Render(scene.cameras[0]);
+	// unsigned char* image = new unsigned char[width * height * 3];
 
-	write_ppm("test.ppm", image, width, height);
+	// int i = 0;
+	// for (int y = 0; y < height; ++y)
+	// {
+	// 	for (int x = 0; x < width; ++x)
+	// 	{
+	// 		int colIdx = x / columnWidth;
+	// 		image[i++] = BAR_COLOR[colIdx][0];
+	// 		image[i++] = BAR_COLOR[colIdx][1];
+	// 		image[i++] = BAR_COLOR[colIdx][2];
+	// 	}
+	// }
+
+	// write_ppm("test.ppm", image, width, height);
 
 }

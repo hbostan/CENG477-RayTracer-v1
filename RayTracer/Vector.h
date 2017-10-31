@@ -1,4 +1,5 @@
-
+#ifndef __HW1__VECTOR__
+#define __HW1__VECTOR__
 
 
 class Vec3f {
@@ -27,6 +28,26 @@ public:
 	float dot(Vec3f v);
 	Vec3f cross(Vec3f v);
 };
+
+inline Vec3f operator+(const Vec3f& a, const Vec3f& b)
+{
+  return Vec3f(a.x+b.x, a.y+b.y, a.z+b.z);
+}
+
+inline Vec3f operator-(const Vec3f& a, const Vec3f& b)
+{
+  return Vec3f(a.x-b.x, a.y-b.y, a.z-b.z);
+}
+
+inline Vec3f operator*(const Vec3f& a, const float& b)
+{
+  return Vec3f(a.x*b, a.y*b, a.z*b);
+}
+
+inline Vec3f operator+(const Vec3f& a, const float& b)
+{
+  return Vec3f(a.x/b, a.y/b, a.z/b);
+}
 
 typedef Vec3f Point;
 
@@ -61,3 +82,5 @@ class Vec4f {
 public:
 	float x, y, z, w;
 };
+
+#endif

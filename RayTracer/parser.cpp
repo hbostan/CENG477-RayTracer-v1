@@ -201,10 +201,12 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 		child = element->FirstChildElement("Material");
 		stream << child->GetText() << std::endl;
 		stream >> sphere.material_id;
+		sphere.material_id--;
 
 		child = element->FirstChildElement("Center");
 		stream << child->GetText() << std::endl;
 		stream >> sphere.center_vertex_id;
+		sphere.center_vertex_id--;
 
 		child = element->FirstChildElement("Radius");
 		stream << child->GetText() << std::endl;

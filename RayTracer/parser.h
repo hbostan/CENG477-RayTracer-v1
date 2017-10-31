@@ -1,11 +1,13 @@
 #ifndef __HW1__PARSER__
 #define __HW1__PARSER__
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include "Vector.h"
-#include "Camera.h"
-
+#include "Ray.h"
+#include "ppm.h"
+using namespace std;
 namespace parser
 {
 	//Notice that all the structures are as simple as possible
@@ -27,7 +29,7 @@ namespace parser
 
 	struct Camera
 	{
-		Vec3f position;
+		Point position;
 		Vec3f gaze;
 		Vec3f up;
 		Vec4f near_plane;
@@ -91,6 +93,96 @@ namespace parser
 		std::vector<Mesh> meshes;
 		std::vector<Triangle> triangles;
 		std::vector<Sphere> spheres;
+
+		float SphereIntersect(const Ray &ray, const Sphere &sphere)
+		{
+			float root1, root2;
+
+			Vec3f direction = ray.direction;
+			Vec3f distance_vector = ray.origin - vertex_data[sphere.center_vertex_id];
+			
+			float A = direction.dot(direction);
+			float B = direction.dot(distance_vector) * 2;
+			float C = distance_vector.dot(distance_vector) - sphere.radius * sphere.radius;
+
+			float discriminant = B * B - 4 * A * C;
+			if(discriminant < 0) return false;
+			else
+			{
+				root1 = (-B + discriminant)/(2*A);
+				root2 = (-B - discriminant)/(2*A); 
+			}
+
+			float small = root1 < root2 ? root1 : root2;
+			float big = root1 > root2 ? root1 : root2;
+
+			if(small < 0)
+			{
+				if(big < 0) return -1;
+				return big;
+			}
+			else
+			{
+				return small;
+			}
+
+		}
+
+		void Render(Camera camera)
+		{
+			Vec3f right_vector = camera.up.cross(-camera.gaze);
+			
+			cout << "hebele" << endl;
+
+			float left = camera.near_plane.x;
+			float right = camera.near_plane.y;
+			float bottom = camera.near_plane.z;
+			float top = camera.near_plane.w;
+
+			Point m = camera.position + camera.gaze * camera.near_distance;
+			Point q = m + (right_vector * left + camera.up * top);
+
+			float horizontal_step = (right - left)/camera.image_width;
+			float vertical_step = (top - bottom)/camera.image_height;
+
+			unsigned char* image = new unsigned char[camera.image_width * camera.image_height * 3];
+
+			int i = 0;
+			for(int y = 0; y < camera.image_height; ++y)
+			{
+				for(int x = 0; x < camera.image_width; ++x)
+				{
+					float u = left + horizontal_step * (x+0.5);
+					float v = top - vertical_step * (y+0.5);
+
+					Point s = q + camera.up * u + right_vector * v;
+
+					Vec3f d = s - camera.position;
+					d.normalize();
+
+					Ray ray(camera.position, d);
+
+					for(auto it = spheres.begin(); it != spheres.end(); it++)
+					{
+						i = (y * camera.image_width + x)*3;
+						if(SphereIntersect(ray, *(it)) > 0)
+						{
+							image[i++] = 255;
+							image[i++] = 0;
+							image[i++] = 255;
+						}
+						else
+						{
+							image[i++] = 0;
+							image[i++] = 0;
+							image[i++] = 0;
+						}
+					}
+				}
+			}
+
+			write_ppm("test.ppm", image, camera.image_width, camera.image_height);
+		}
 
 		//Functions
 		void loadFromXml(const std::string& filepath);
