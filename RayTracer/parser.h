@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Vector.h"
+#include "Camera.h"
 
 namespace parser
 {
