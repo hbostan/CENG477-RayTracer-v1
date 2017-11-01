@@ -64,10 +64,27 @@ Vec3f & Vec3f::operator/=(const Vec3f & v)
 	return *this;
 }
 
+Vec3f Vec3f::operator+(const Vec3f& other)
+{
+	return Vec3f(x+other.x, y+other.y, z+other.z);
+}
+Vec3f Vec3f::operator-(const Vec3f& other)
+{
+	return Vec3f(x-other.x, y-other.y, z-other.z);
+}
+Vec3f Vec3f::operator*(const float& other)
+{
+	return Vec3f(x*other, y*other, z*other);
+}
+Vec3f Vec3f::operator/(const float& other)
+{
+	return Vec3f(x*other, y*other, z*other);
+}
 Vec3f Vec3f::operator-()
 {
 	return Vec3f(-x, -y, -z);
 }
+
 
 float Vec3f::dot(Vec3f v)
 {
