@@ -66,16 +66,15 @@ struct Sphere: public Shape
         if(small < 0)
         {
             if(big < 0) return false;
-            i.t = big;
+            if(i.t > big) i.t = big;
         }
         else
         {
-            i.t = small;
+            if(i.t > small) i.t = small;
         }
 
-        i.surfaceNormal = ray.calculate(i.t).normalized();
-        i.pSphere = this;
-
+        i.material_id = material_id;
+        i.surfaceNormal = (ray.calculate(i.t) - center).normalized();
         return true;
     }
 };
@@ -108,20 +107,20 @@ struct Triangle: public Shape
         float beta = determinant_3(Vec3f(a.x - ray.origin.x, a.x - c.x, direction.x),
                                     Vec3f(a.y - ray.origin.y, a.y - c.y, direction.y),
                                     Vec3f(a.z - ray.origin.z, a.z - c.z, direction.z)) / A;
-        if(beta <= 0) return false;
+        if(beta < -1e-8) return false;
 
         float gamma = determinant_3(Vec3f(a.x - b.x, a.x - ray.origin.x, direction.x),
                                     Vec3f(a.y - b.y, a.y - ray.origin.y, direction.y),
                                     Vec3f(a.z - b.z, a.z - ray.origin.z, direction.z)) / A;
-        if(gamma <= 0) return false;
-        if(beta + gamma >= 1) return false;
+        if(gamma < -1e-8) return false;
+        if(beta + gamma > 1) return false;
 
         float t = determinant_3(Vec3f(a.x - b.x, a.x - c.x, a.x - ray.origin.x),
                                     Vec3f(a.y - b.y, a.y - c.y, a.y - ray.origin.y),
                                     Vec3f(a.z - b.z, a.z - c.z, a.z - ray.origin.z)) / A;
 
         //TODO_ALPEREN: DO SOMETHING TO THIS
-        if(t > 0)
+        if(t > 0 && i.t > t)
         {
             i.t = t;
         }
@@ -129,6 +128,9 @@ struct Triangle: public Shape
         {
             return false;
         }
+
+        i.material_id = material_id;
+        i.surfaceNormal = (b-a).cross(c-a).normalized();
         return true;
     }
 };

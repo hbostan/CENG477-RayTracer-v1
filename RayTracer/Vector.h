@@ -44,6 +44,11 @@ inline Vec3f operator*(const Vec3f& a, const float& b)
   return Vec3f(a.x*b, a.y*b, a.z*b);
 }
 
+inline Vec3f operator*(const Vec3f& a, const Vec3f& b)
+{
+  return Vec3f(a.x*b.x, a.y*b.y, a.z*b.z);
+}
+
 inline Vec3f operator/(const Vec3f& a, const float& b)
 {
   return Vec3f(a.x/b, a.y/b, a.z/b);
