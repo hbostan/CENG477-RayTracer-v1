@@ -157,13 +157,17 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 		child = element->FirstChildElement("Material");
 		stream << child->GetText() << std::endl;
 		stream >> mesh.material_id;
+		mesh.material_id--;
 
 		child = element->FirstChildElement("Faces");
 		stream << child->GetText() << std::endl;
 		Face face;
 		while (!(stream >> face.v0_id).eof())
 		{
+			face.v0_id--;
 			stream >> face.v1_id >> face.v2_id;
+			face.v1_id--;
+			face.v2_id--;
 			mesh.faces.push_back(face);
 		}
 		stream.clear();

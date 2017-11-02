@@ -93,7 +93,22 @@ namespace parser
 
 					for(auto it = meshes.begin(); it != meshes.end(); it++)
 					{
-						Intersection intersection(ray);
+						Mesh mesh = (*it);
+
+						for(auto it2 = mesh.faces.begin(); it2 != mesh.faces.end(); it2++)
+						{
+							Triangle triangle;
+							triangle.material_id = mesh.material_id;
+							triangle.indices = (*it2);
+
+							Intersection intersection(ray);
+							if(triangle.intersect(intersection, vertex_data))
+							{
+								image[i++] = 255;
+								image[i++] = 255;
+								image[i++] = 0;
+							}
+						}
 					}
 				}
 			}

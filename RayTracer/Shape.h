@@ -17,6 +17,17 @@ struct Face
 struct Shape
 {
     virtual bool intersect(Intersection& i, const std::vector<Vec3f> &vertex_data) = 0;
+
+    float determinant_2(float a, float b, float c, float d)
+    {
+        return a*d - b*c;
+    }
+    
+    float determinant_3(Vec3f row1, Vec3f row2, Vec3f row3)
+    {
+        return row1.x * determinant_2(row2.y, row2.z, row3.y, row3.z) - row1.y * determinant_2(row2.x, row2.z, row3.x, row3.z)
+            + row1.z * determinant_2(row2.x, row2.y, row3.x, row3.y);
+    }
 };
 
 struct Sphere: public Shape
@@ -73,23 +84,13 @@ struct Mesh
 {
     int material_id;
     std::vector<Face> faces;
+
 };
 
 struct Triangle: public Shape
 {
     int material_id;
     Face indices;
-
-    float determinant_2(float a, float b, float c, float d)
-    {
-        return a*d - b*c;
-    }
-    
-    float determinant_3(Vec3f row1, Vec3f row2, Vec3f row3)
-    {
-        return row1.x * determinant_2(row2.y, row2.z, row3.y, row3.z) - row1.y * determinant_2(row2.x, row2.z, row3.x, row3.z)
-            + row1.z * determinant_2(row2.x, row2.y, row3.x, row3.y);
-    }
 
     bool intersect(Intersection &i, const std::vector<Vec3f> &vertex_data)
     {
@@ -113,7 +114,7 @@ struct Triangle: public Shape
                                     Vec3f(a.y - b.y, a.y - ray.origin.y, direction.y),
                                     Vec3f(a.z - b.z, a.z - ray.origin.z, direction.z)) / A;
         if(gamma <= 0) return false;
-        if(beta + gamma <= 1) return false;
+        if(beta + gamma >= 1) return false;
 
         float t = determinant_3(Vec3f(a.x - b.x, a.x - c.x, a.x - ray.origin.x),
                                     Vec3f(a.y - b.y, a.y - c.y, a.y - ray.origin.y),
