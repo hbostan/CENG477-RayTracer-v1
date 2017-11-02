@@ -40,18 +40,19 @@ struct Camera
         m = position + gaze * near_distance;
         q = m + (right_vector * left + up * top);
         
-        horizontal_step = (right - left)/image_width;
-        vertical_step = (top - bottom)/image_height;
+        horizontal_step = (right - left)/(float)image_width;
+        vertical_step = (top - bottom)/(float)image_height;
     }
 
     Ray makeRay(int x, int y)
     {
-        float u = left + horizontal_step * (x+0.5);
-        float v = top - vertical_step * (y+0.5);
+        float u = horizontal_step * (x+0.5);
+        float v = vertical_step * (y+0.5);
 
-        Point s = q + up * u + right_vector * v;
+        Point s = q + right_vector * u - up * v;
 
         Vec3f d = s - position;
+
         d.normalize();
 
         return Ray(position, d);

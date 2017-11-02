@@ -88,6 +88,13 @@ namespace parser
 							image[i++] = 255;
 						}
 					}
+
+					i = (y * camera.image_width + x) * 3;
+
+					for(auto it = meshes.begin(); it != meshes.end(); it++)
+					{
+						Intersection intersection(ray);
+					}
 				}
 			}
 
