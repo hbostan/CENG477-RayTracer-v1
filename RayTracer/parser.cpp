@@ -183,10 +183,14 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 		child = element->FirstChildElement("Material");
 		stream << child->GetText() << std::endl;
 		stream >> triangle.material_id;
+		triangle.material_id--;
 
 		child = element->FirstChildElement("Indices");
 		stream << child->GetText() << std::endl;
 		stream >> triangle.indices.v0_id >> triangle.indices.v1_id >> triangle.indices.v2_id;
+		triangle.indices.v0_id--;
+		triangle.indices.v1_id--;
+		triangle.indices.v2_id--;
 
 		triangles.push_back(triangle);
 		element = element->NextSiblingElement("Triangle");

@@ -27,25 +27,6 @@ namespace parser
 		Vec3f mirror;
 		float phong_exponent;
 	};
-
-	struct Face
-	{
-		int v0_id;
-		int v1_id;
-		int v2_id;
-	};
-
-	struct Mesh
-	{
-		int material_id;
-		std::vector<Face> faces;
-	};
-
-	struct Triangle
-	{
-		int material_id;
-		Face indices;
-	};
 	
 	struct Scene
 	{
@@ -67,16 +48,37 @@ namespace parser
 			camera.initCamera();
 			unsigned char* image = new unsigned char[camera.image_width * camera.image_height * 3];
 
+			int j = 0;
+			for(int i = 0; i < camera.image_width * camera.image_height; i++)
+			{
+				image[j++] = background_color.x;
+				image[j++] = background_color.y;
+				image[j++] = background_color.z;
+			}
+
 			int i = 0;
 			for(int y = 0; y < camera.image_height; ++y)
 			{
 				for(int x = 0; x < camera.image_width; ++x)
 				{
 					Ray ray = camera.makeRay(x, y);
+					i = (y * camera.image_width + x) * 3;
+
+					for(auto it = triangles.begin(); it != triangles.end(); it++)
+					{
+						Intersection intersection(ray);
+						if(it->intersect(intersection, vertex_data))
+						{
+							image[i++] = 0;
+							image[i++] = 255;
+							image[i++] = 255;
+						}
+					}
+
+					i = (y * camera.image_width + x) * 3;
 
 					for(auto it = spheres.begin(); it != spheres.end(); it++)
 					{
-						i = (y * camera.image_width + x) * 3;
 						Intersection intersection(ray);
 						it->intersect(intersection, vertex_data);
 						if(intersection.pSphere)
@@ -84,12 +86,6 @@ namespace parser
 							image[i++] = 255;
 							image[i++] = 0;
 							image[i++] = 255;
-						}
-						else
-						{
-							image[i++] = 0;
-							image[i++] = 0;
-							image[i++] = 0;
 						}
 					}
 				}
