@@ -54,8 +54,6 @@ struct Camera
         Vec3f d = s - position;
         d.normalize();
 
-        
-
         return Ray(position, d);
     }
 };

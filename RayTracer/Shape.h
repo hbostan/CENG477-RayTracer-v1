@@ -32,7 +32,7 @@ struct Sphere: public Shape
         float root1, root2;
         Ray ray = i.ray;
 
-        Vec3f direction = ray.direction;
+        Vec3f direction = ray.direction.normalized();
         Vec3f distance_vector = ray.origin - center;
                     
         float A = direction.dot(direction);
@@ -102,10 +102,10 @@ struct Triangle: public Shape
         //float A = determinant_3(a_b, a_c, direction);
 
         float A = determinant_3(Vec3f(a.x - b.x, a.x - c.x, direction.x),
-        Vec3f(a.y - b.y, a.y - c.y, direction.y),
-        Vec3f(a.z - b.z, a.z - c.z, direction.z));
+                                    Vec3f(a.y - b.y, a.y - c.y, direction.y),
+                                    Vec3f(a.z - b.z, a.z - c.z, direction.z));
 
-        std::cout << a.x << " " << a.y << " " << a.z << std::endl;
+        std::cout << direction.x << " " << direction.y << " " << direction.z << std::endl;
 
         float beta = determinant_3(Vec3f(a.x - ray.origin.x, a.x - c.x, direction.x),
                                     Vec3f(a.y - ray.origin.y, a.y - c.y, direction.y),
