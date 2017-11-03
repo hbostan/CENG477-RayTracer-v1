@@ -29,7 +29,7 @@ struct Intersection
         pSphere = other.pSphere;
         return *this;
     }
-
+	//TODO: Fix infinity
     bool intersected() { return bool(t < 1000000.0f); }
 
     Point hitPoint() { return ray.calculate(t); }

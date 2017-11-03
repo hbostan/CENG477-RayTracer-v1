@@ -224,3 +224,112 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 		element = element->NextSiblingElement("Sphere");
 	}
 }
+
+void parser::Scene::Render(Camera &camera)
+{
+	camera.initCamera();
+	unsigned char* image = new unsigned char[camera.image_width * camera.image_height * 3];
+
+	int i = 0;
+
+	for (int y = 0; y < camera.image_height; ++y)
+	{
+		for (int x = 0; x < camera.image_width; ++x)
+		{
+			Ray ray = camera.makeRay(x, y);
+			i = (y * camera.image_width + x) * 3;
+			Vec3f color = castRay(ray);
+			image[i++] = clamp(color.x);
+			image[i++] = clamp(color.y);
+			image[i++] = clamp(color.z);
+		}
+	}
+
+	write_ppm(camera.image_name.c_str(), image, camera.image_width, camera.image_height);
+}
+
+Intersection parser::Scene::getIntersection(Ray &ray)
+{
+	Intersection intersection(ray);
+	for (auto it = triangles.begin(); it != triangles.end(); it++)
+	{
+		it->intersect(intersection, vertex_data);
+	}
+
+	for (auto it = spheres.begin(); it != spheres.end(); it++)
+	{
+		it->intersect(intersection, vertex_data);
+	}
+
+	for (auto it = meshes.begin(); it != meshes.end(); it++)
+	{
+		Mesh mesh = (*it);
+
+		for (auto it2 = mesh.faces.begin(); it2 != mesh.faces.end(); it2++)
+		{
+			Triangle triangle;
+			triangle.material_id = mesh.material_id;
+			triangle.indices = (*it2);
+
+			triangle.intersect(intersection, vertex_data);
+
+		}
+
+	}
+
+	return intersection;
+}
+
+Vec3f parser::Scene::castRay(Ray& ray)
+{
+	Intersection intersection = getIntersection(ray);
+
+	if (intersection.intersected())
+	{
+		return lightItUp(intersection);
+	}
+	Vec3f background(background_color.x, background_color.y, background_color.z);
+	return background;
+}
+
+Vec3f parser::Scene::lightItUp(Intersection& intersection)
+{
+	Vec3f ambient_intensity = ambient_light*materials[intersection.material_id].ambient;
+	Vec3f diffuse_specular_intensity = getDiffuseSpecular(intersection);
+//TODO add reflections here
+	return ambient_intensity + diffuse_specular_intensity;
+}
+
+Vec3f parser::Scene::getDiffuseSpecular(Intersection& intersection)
+{
+	Vec3f diffuseColor(0), specularColor(0);
+	Point intersection_point = intersection.hitPoint();
+
+	for (auto it = point_lights.begin(); it != point_lights.end(); it++)
+	{
+		PointLight light = *it;
+		Vec3f light_vector = light.position - intersection_point;
+		Vec3f light_direction = light_vector.normalized();
+		float light_distance = light_vector.length();
+
+		bool is_facing_light = intersection.surfaceNormal.dot(light_direction) >= 0.0f;
+		if (is_facing_light)
+		{
+			Point shadow_ray_origin = intersection_point + (light_vector * shadow_ray_epsilon);
+			Ray shadow_ray(shadow_ray_origin, light_vector);
+			Intersection shadow_intersection = getIntersection(shadow_ray);
+			// If in shadow, calculate other lights
+			//cout << shadow_intersection.intersected() << " " << (intersection.t < light_distance) << endl;
+			if (shadow_intersection.intersected() && shadow_intersection.t < light_distance)
+			{
+				continue;
+			}
+			float cosine = max(0.0f, light_direction.dot(intersection.surfaceNormal));
+
+			diffuseColor += materials[intersection.material_id].diffuse * cosine * (light.intensity / light_vector.sqrLength()); //TODO: light_vector.sqrLength() or light_distance^2 ??
+			specularColor += materials[intersection.material_id].specular * pow(cosine, materials[intersection.material_id].phong_exponent) * (light.intensity / light_vector.sqrLength());
+		}
+
+	}
+	return diffuseColor + specularColor;
+}

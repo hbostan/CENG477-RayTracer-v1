@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
 	cout << "hebele" << endl;
 
 	scene.Render(scene.cameras[0]);
-	//system("pause");
 	// unsigned char* image = new unsigned char[width * height * 3];
 
 	// int i = 0;
