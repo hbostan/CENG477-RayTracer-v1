@@ -12,6 +12,7 @@ public:
 
     Point origin;
     Vec3f direction;
+	//TODO: Add reflection count here
 
     Point calculate(float t) 
     {

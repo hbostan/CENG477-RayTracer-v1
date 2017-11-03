@@ -296,7 +296,7 @@ Vec3f parser::Scene::lightItUp(Intersection& intersection)
 {
 	Vec3f ambient_intensity = ambient_light*materials[intersection.material_id].ambient;
 	Vec3f diffuse_specular_intensity = getDiffuseSpecular(intersection);
-//TODO add reflections here
+	//TODO add reflections here
 	return ambient_intensity + diffuse_specular_intensity;
 }
 
@@ -319,7 +319,6 @@ Vec3f parser::Scene::getDiffuseSpecular(Intersection& intersection)
 			Ray shadow_ray(shadow_ray_origin, light_vector);
 			Intersection shadow_intersection = getIntersection(shadow_ray);
 			// If in shadow, calculate other lights
-			//cout << shadow_intersection.intersected() << " " << (intersection.t < light_distance) << endl;
 			if (shadow_intersection.intersected() && shadow_intersection.t < light_distance)
 			{
 				continue;

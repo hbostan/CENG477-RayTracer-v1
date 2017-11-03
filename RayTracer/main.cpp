@@ -31,23 +31,12 @@ int main(int argc, char* argv[])
 	int width = 640, height = 480;
 	int columnWidth = width / 8;
 
-	cout << "hebele" << endl;
+	cout << "Add recursion limit to \"Ray\"s:Ray.h\n" <<
+		"Add reflections:parser.h\n"<<
+		"Fix Infinity: Intersection.h\n"<<
+		"ALPEREN TODO: Shape.h\n"<<
+		"Iterate over cameras:parser.h/main.cpp\n" << endl;
 
 	scene.Render(scene.cameras[0]);
-	// unsigned char* image = new unsigned char[width * height * 3];
-
-	// int i = 0;
-	// for (int y = 0; y < height; ++y)
-	// {
-	// 	for (int x = 0; x < width; ++x)
-	// 	{
-	// 		int colIdx = x / columnWidth;
-	// 		image[i++] = BAR_COLOR[colIdx][0];
-	// 		image[i++] = BAR_COLOR[colIdx][1];
-	// 		image[i++] = BAR_COLOR[colIdx][2];
-	// 	}
-	// }
-
-	// write_ppm("test.ppm", image, width, height);
 
 }

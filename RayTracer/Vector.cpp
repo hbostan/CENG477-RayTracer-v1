@@ -90,19 +90,6 @@ int Vec3i::sqrLength()
 	return x*x + y*y + z*z;
 }
 
-/*float Vec3i::normalize()
-{
-	*this /= this->length();
-	return this->length();
-}
-
-Vec3i Vec3i::normalized()
-{
-	Vec3i v(*this);
-	v.normalize();
-	return v;
-}*/
-
 Vec3i & Vec3i::operator=(const Vec3i & v)
 {
 	x = v.x;

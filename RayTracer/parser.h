@@ -49,9 +49,13 @@ namespace parser
 			return (int)(round(max(0.0f, min(n, 255.0f))));
 		}
 
+		//TODO iterate over cameras
 		void Render(Camera &camera);
+
 		Intersection getIntersection(Ray &ray);
 		Vec3f castRay(Ray& ray);
+		//TODO add reflections here
+		//TODO add reflection counter into Ray.
 		Vec3f lightItUp(Intersection& intersection);
 		Vec3f getDiffuseSpecular(Intersection& intersection);
 		
