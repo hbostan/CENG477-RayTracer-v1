@@ -310,22 +310,25 @@ Vec3f parser::Scene::getDiffuseSpecular(Intersection& intersection)
 		PointLight light = *it;
 		Vec3f light_vector = light.position - intersection_point;
 		Vec3f light_direction = light_vector.normalized();
+		Vec3f half_vector = (light_direction - intersection.ray.direction).normalized();
 		float light_distance = light_vector.length();
 
 		bool is_facing_light = intersection.surfaceNormal.dot(light_direction) >= 0.0f;
 		if (is_facing_light)
 		{
-			Point shadow_ray_origin = intersection_point + (light_vector * shadow_ray_epsilon);
+			Point shadow_ray_origin = intersection_point + (light_direction * shadow_ray_epsilon);
 			Ray shadow_ray(shadow_ray_origin, light_vector);
 			Intersection shadow_intersection = getIntersection(shadow_ray);
 			// If in shadow, calculate other lights
-			if (shadow_intersection.intersected() && shadow_intersection.t < light_distance)
+			if (shadow_intersection.intersected() && shadow_intersection.t < 1)
 			{
 				continue;
 			}
 			float cosine = max(0.0f, light_direction.dot(intersection.surfaceNormal));
 
 			diffuseColor += materials[intersection.material_id].diffuse * cosine * (light.intensity / light_vector.sqrLength()); //TODO: light_vector.sqrLength() or light_distance^2 ??
+			
+			cosine = max(0.0f, half_vector.dot(intersection.surfaceNormal));
 			specularColor += materials[intersection.material_id].specular * pow(cosine, materials[intersection.material_id].phong_exponent) * (light.intensity / light_vector.sqrLength());
 		}
 

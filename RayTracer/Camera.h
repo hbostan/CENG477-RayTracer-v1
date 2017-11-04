@@ -30,8 +30,10 @@ struct Camera
 
     void initCamera()
     {
+        gaze = gaze.normalized();
         right_vector = up.cross(-gaze);
-        
+        up = right_vector.cross(gaze);
+
         left = near_plane.x;
         right = near_plane.y;
         bottom = near_plane.z;

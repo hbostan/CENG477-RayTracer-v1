@@ -43,7 +43,7 @@ struct Sphere: public Shape
         float root1, root2;
         Ray ray = i.ray;
 
-        Vec3f direction = ray.direction.normalized();
+        Vec3f direction = ray.direction;
         Vec3f distance_vector = ray.origin - center;
                     
         float A = direction.dot(direction);
@@ -65,8 +65,7 @@ struct Sphere: public Shape
 
         if(small < 0)
         {
-            if(big < 0) return false;
-            if(i.t > big) i.t = big;
+            return false;
         }
         else
         {
@@ -107,12 +106,12 @@ struct Triangle: public Shape
         float beta = determinant_3(Vec3f(a.x - ray.origin.x, a.x - c.x, direction.x),
                                     Vec3f(a.y - ray.origin.y, a.y - c.y, direction.y),
                                     Vec3f(a.z - ray.origin.z, a.z - c.z, direction.z)) / A;
-        if(beta < -1e-8) return false;
+        if(beta < -1e-6) return false;
 
         float gamma = determinant_3(Vec3f(a.x - b.x, a.x - ray.origin.x, direction.x),
                                     Vec3f(a.y - b.y, a.y - ray.origin.y, direction.y),
                                     Vec3f(a.z - b.z, a.z - ray.origin.z, direction.z)) / A;
-        if(gamma < -1e-8) return false;
+        if(gamma < -1e-6) return false;
         if(beta + gamma > 1) return false;
 
         float t = determinant_3(Vec3f(a.x - b.x, a.x - c.x, a.x - ray.origin.x),
