@@ -16,7 +16,7 @@ struct Face
 
 struct Shape
 {
-    virtual bool intersect(Intersection& i, const std::vector<Vec3f> &vertex_data) = 0;
+    virtual bool intersect(Intersection& i, const std::vector<Vec3f> &vertex_data, bool backface_culling) = 0;
 
     float determinant_2(float a, float b, float c, float d)
     {
@@ -36,7 +36,7 @@ struct Sphere: public Shape
     int center_vertex_id;
     float radius;
 
-    bool intersect(Intersection &i, const std::vector<Vec3f> &vertex_data)
+    bool intersect(Intersection &i, const std::vector<Vec3f> &vertex_data, bool backface_culling)
     {
         Point center = vertex_data[center_vertex_id];
 
@@ -60,10 +60,19 @@ struct Sphere: public Shape
         }
             
         float small = root1 < root2 ? root1 : root2;
+        float big = root1 > root2 ? root1 : root2;
 
         if(small < -1e-6)
         {
-            return false;
+            if(backface_culling)
+            {
+                return false;
+            }
+            else if(big < -1e-6)
+            {
+                return false;
+            }
+            i.t = big;
         }
 
         if(i.t > small) 
@@ -89,7 +98,7 @@ struct Triangle: public Shape
     int material_id;
     Face indices;
 
-    bool intersect(Intersection &i, const std::vector<Vec3f> &vertex_data)
+    bool intersect(Intersection &i, const std::vector<Vec3f> &vertex_data, bool backface_culling)
     {
         Ray ray = i.ray;
         Vec3f direction = i.ray.direction;
@@ -98,9 +107,12 @@ struct Triangle: public Shape
         Point b = vertex_data[indices.v1_id];
         Point c = vertex_data[indices.v2_id];
 
-        Vec3f normal = (b-a).cross(c-a).normalized();
+        Vec3f b_a = (b - a).normalized();
+        Vec3f c_a = (c - a).normalized();
 
-        if(direction.dot(normal) > 0) return false;
+        Vec3f normal = (b_a.cross(c_a)).normalized();
+
+        if(backface_culling && direction.dot(normal) > 0) return false;
 
         float A = determinant_3(Vec3f(a.x - b.x, a.x - c.x, direction.x),
                                     Vec3f(a.y - b.y, a.y - c.y, direction.y),

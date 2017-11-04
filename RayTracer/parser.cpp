@@ -249,17 +249,17 @@ void parser::Scene::Render(Camera &camera)
 	write_ppm(camera.image_name.c_str(), image, camera.image_width, camera.image_height);
 }
 
-Intersection parser::Scene::getIntersection(Ray &ray)
+Intersection parser::Scene::getIntersection(Ray &ray, bool backface_culling)
 {
 	Intersection intersection(ray);
 	for (auto it = triangles.begin(); it != triangles.end(); it++)
 	{
-		it->intersect(intersection, vertex_data);
+		it->intersect(intersection, vertex_data, backface_culling);
 	}
 
 	for (auto it = spheres.begin(); it != spheres.end(); it++)
 	{
-		it->intersect(intersection, vertex_data);
+		it->intersect(intersection, vertex_data, backface_culling);
 	}
 
 	for (auto it = meshes.begin(); it != meshes.end(); it++)
@@ -272,7 +272,7 @@ Intersection parser::Scene::getIntersection(Ray &ray)
 			triangle.material_id = mesh.material_id;
 			triangle.indices = (*it2);
 
-			triangle.intersect(intersection, vertex_data);
+			triangle.intersect(intersection, vertex_data, backface_culling);
 
 		}
 
@@ -283,7 +283,7 @@ Intersection parser::Scene::getIntersection(Ray &ray)
 
 Vec3f parser::Scene::castRay(Ray& ray, int level)
 {
-	Intersection intersection = getIntersection(ray);
+	Intersection intersection = getIntersection(ray, true);
 
 	if (intersection.intersected())
 	{
@@ -327,12 +327,12 @@ Vec3f parser::Scene::getDiffuseSpecular(Intersection& intersection)
 		Vec3f half_vector = (light_direction - intersection.ray.direction).normalized();
 		float light_distance = light_vector.length();
 
-		bool is_facing_light = intersection.surfaceNormal.dot(light_direction) >= 0.0f;
-		if (is_facing_light)
+		//bool is_facing_light = intersection.surfaceNormal.dot(light_direction) >= 0.0f;
+		//if (is_facing_light)
 		{
 			Point shadow_ray_origin = intersection_point + (light_direction * shadow_ray_epsilon);
 			Ray shadow_ray(shadow_ray_origin, light_direction);
-			Intersection shadow_intersection = getIntersection(shadow_ray);
+			Intersection shadow_intersection = getIntersection(shadow_ray, false);
 			// If in shadow, calculate other lights
 			if (shadow_intersection.intersected())
 			{

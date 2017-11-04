@@ -52,7 +52,7 @@ namespace parser
 		//TODO iterate over cameras
 		void Render(Camera &camera);
 
-		Intersection getIntersection(Ray &ray);
+		Intersection getIntersection(Ray &ray, bool backface_culling);
 		Vec3f castRay(Ray& ray, int level);
 		//TODO add reflections here
 		//TODO add reflection counter into Ray.
