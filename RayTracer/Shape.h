@@ -121,7 +121,6 @@ struct Triangle: public Shape
                                     Vec3f(a.y - b.y, a.y - c.y, a.y - ray.origin.y),
                                     Vec3f(a.z - b.z, a.z - c.z, a.z - ray.origin.z)) / A;
 
-        //TODO_ALPEREN: DO SOMETHING TO THIS
         if(t > 0 && i.t > t)
         {
             i.t = t;

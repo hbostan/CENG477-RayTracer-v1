@@ -46,7 +46,7 @@ namespace parser
 
 		inline int clamp(float n) 
 		{
-			return (int)(round(max(0.0f, min(n, 255.0f))));
+			return (int)(max(0.0f, min(n, 255.0f)));
 		}
 
 		//TODO iterate over cameras

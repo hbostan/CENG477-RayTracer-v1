@@ -239,13 +239,7 @@ void parser::Scene::Render(Camera &camera)
 			Ray ray = camera.makeRay(x, y);
 			i = (y * camera.image_width + x) * 3;
 			Vec3f color = castRay(ray, 0);
-
-			if(color.x == 0 && color.y == 0 && color.z == 0)
-			{
-				color.x += background_color.x;
-				color.y += background_color.y;
-				color.z += background_color.z;
-			}
+			
 			image[i++] = clamp(color.x);
 			image[i++] = clamp(color.y);
 			image[i++] = clamp(color.z);
@@ -296,7 +290,7 @@ Vec3f parser::Scene::castRay(Ray& ray, int level)
 		return lightItUp(intersection, level);
 	}
 
-	return Vec3f(0);
+	return Vec3f(background_color.x, background_color.y, background_color.z);
 }
 
 Vec3f parser::Scene::lightItUp(Intersection& intersection, int level)
