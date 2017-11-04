@@ -106,11 +106,8 @@ struct Triangle: public Shape
         Point a = vertex_data[indices.v0_id];
         Point b = vertex_data[indices.v1_id];
         Point c = vertex_data[indices.v2_id];
-
-        Vec3f b_a = (b - a).normalized();
-        Vec3f c_a = (c - a).normalized();
-
-        Vec3f normal = (b_a.cross(c_a)).normalized();
+        
+        Vec3f normal = ((b-a).cross(c-a)).normalized();
 
         if(backface_culling && direction.dot(normal) > 0) return false;
 
