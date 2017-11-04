@@ -53,10 +53,10 @@ namespace parser
 		void Render(Camera &camera);
 
 		Intersection getIntersection(Ray &ray);
-		Vec3f castRay(Ray& ray);
+		Vec3f castRay(Ray& ray, int level);
 		//TODO add reflections here
 		//TODO add reflection counter into Ray.
-		Vec3f lightItUp(Intersection& intersection);
+		Vec3f lightItUp(Intersection& intersection, int level);
 		Vec3f getDiffuseSpecular(Intersection& intersection);
 		
 

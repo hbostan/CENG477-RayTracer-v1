@@ -63,7 +63,7 @@ struct Sphere: public Shape
         float big = root1 > root2 ? root1 : root2;
 
 
-        if(small < 0)
+        if(small < -1e-6)
         {
             return false;
         }

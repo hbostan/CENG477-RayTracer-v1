@@ -238,7 +238,7 @@ void parser::Scene::Render(Camera &camera)
 		{
 			Ray ray = camera.makeRay(x, y);
 			i = (y * camera.image_width + x) * 3;
-			Vec3f color = castRay(ray);
+			Vec3f color = castRay(ray, 0);
 			image[i++] = clamp(color.x);
 			image[i++] = clamp(color.y);
 			image[i++] = clamp(color.z);
@@ -280,24 +280,38 @@ Intersection parser::Scene::getIntersection(Ray &ray)
 	return intersection;
 }
 
-Vec3f parser::Scene::castRay(Ray& ray)
+Vec3f parser::Scene::castRay(Ray& ray, int level)
 {
 	Intersection intersection = getIntersection(ray);
 
 	if (intersection.intersected())
 	{
-		return lightItUp(intersection);
+		return lightItUp(intersection, level);
 	}
+	//TODO alperen
 	Vec3f background(background_color.x, background_color.y, background_color.z);
 	return background;
 }
 
-Vec3f parser::Scene::lightItUp(Intersection& intersection)
+Vec3f parser::Scene::lightItUp(Intersection& intersection, int level)
 {
+	//TODO add reflections here
+	Vec3f mirror_intensity(0);
+
+	Vec3f mirror_effect = materials[intersection.material_id].mirror;
+	if(level < max_recursion_depth && (mirror_effect.x > 0 || mirror_effect.y > 0 || mirror_effect.z > 0) )
+	{
+		Vec3f normalized_direction = intersection.ray.direction.normalized();
+		Vec3f w_r = (normalized_direction + 
+					intersection.surfaceNormal * 2 * intersection.surfaceNormal.dot(-normalized_direction)).normalized();
+		Ray mirror_ray(intersection.hitPoint(), w_r);
+		mirror_intensity = mirror_effect * castRay(mirror_ray, level+1);
+	}
+
 	Vec3f ambient_intensity = ambient_light*materials[intersection.material_id].ambient;
 	Vec3f diffuse_specular_intensity = getDiffuseSpecular(intersection);
-	//TODO add reflections here
-	return ambient_intensity + diffuse_specular_intensity;
+
+	return ambient_intensity + diffuse_specular_intensity + mirror_intensity;
 }
 
 Vec3f parser::Scene::getDiffuseSpecular(Intersection& intersection)

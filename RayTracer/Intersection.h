@@ -8,15 +8,14 @@ struct Shape;
 
 struct Intersection
 {
-    Intersection() : ray(), pSphere(nullptr), t(INFINITY), surfaceNormal(), material_id(-1){}
+    Intersection() : ray(), t(INFINITY), surfaceNormal(), material_id(-1){}
     Intersection(const Intersection &other)
-        : ray(other.ray), t(other.t), pSphere(other.pSphere),
-        surfaceNormal(other.surfaceNormal), material_id(other.material_id){}
+        : ray(other.ray), t(other.t), surfaceNormal(other.surfaceNormal), 
+        material_id(other.material_id){}
     Intersection(const Ray &ray)
-        : ray(ray), t(INFINITY), pSphere(nullptr), surfaceNormal(), material_id(-1){}
+        : ray(ray), t(INFINITY), surfaceNormal(), material_id(-1){}
 
     Ray ray;
-    Shape *pSphere;
     float t;
     Vec3f surfaceNormal;
     int material_id;
@@ -26,10 +25,9 @@ struct Intersection
         ray = other.ray;
         surfaceNormal = other.surfaceNormal;
         t = other.t;
-        pSphere = other.pSphere;
         return *this;
     }
-    
+
     bool intersected() { return bool(t < INFINITY); }
 
     Point hitPoint() { return ray.calculate(t); }
