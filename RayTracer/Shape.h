@@ -60,16 +60,15 @@ struct Sphere: public Shape
         }
             
         float small = root1 < root2 ? root1 : root2;
-        float big = root1 > root2 ? root1 : root2;
-
 
         if(small < -1e-6)
         {
             return false;
         }
-        else
+
+        if(i.t > small) 
         {
-            if(i.t > small) i.t = small;
+            i.t = small;
         }
 
         i.material_id = material_id;
@@ -98,6 +97,10 @@ struct Triangle: public Shape
         Point a = vertex_data[indices.v0_id];
         Point b = vertex_data[indices.v1_id];
         Point c = vertex_data[indices.v2_id];
+
+        Vec3f normal = (b-a).cross(c-a).normalized();
+
+        if(direction.dot(normal) > 0) return false;
 
         float A = determinant_3(Vec3f(a.x - b.x, a.x - c.x, direction.x),
                                     Vec3f(a.y - b.y, a.y - c.y, direction.y),
@@ -129,7 +132,7 @@ struct Triangle: public Shape
         }
 
         i.material_id = material_id;
-        i.surfaceNormal = (b-a).cross(c-a).normalized();
+        i.surfaceNormal = normal;
         return true;
     }
 };

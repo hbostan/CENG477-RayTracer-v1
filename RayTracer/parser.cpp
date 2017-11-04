@@ -239,6 +239,13 @@ void parser::Scene::Render(Camera &camera)
 			Ray ray = camera.makeRay(x, y);
 			i = (y * camera.image_width + x) * 3;
 			Vec3f color = castRay(ray, 0);
+
+			if(color.x == 0 && color.y == 0 && color.z == 0)
+			{
+				color.x += background_color.x;
+				color.y += background_color.y;
+				color.z += background_color.z;
+			}
 			image[i++] = clamp(color.x);
 			image[i++] = clamp(color.y);
 			image[i++] = clamp(color.z);
@@ -288,15 +295,17 @@ Vec3f parser::Scene::castRay(Ray& ray, int level)
 	{
 		return lightItUp(intersection, level);
 	}
-	//TODO alperen
-	Vec3f background(background_color.x, background_color.y, background_color.z);
-	return background;
+
+	return Vec3f(0);
 }
 
 Vec3f parser::Scene::lightItUp(Intersection& intersection, int level)
 {
 	//TODO add reflections here
 	Vec3f mirror_intensity(0);
+
+	Vec3f ambient_intensity = ambient_light*materials[intersection.material_id].ambient;
+	Vec3f diffuse_specular_intensity = getDiffuseSpecular(intersection);
 
 	Vec3f mirror_effect = materials[intersection.material_id].mirror;
 	if(level < max_recursion_depth && (mirror_effect.x > 0 || mirror_effect.y > 0 || mirror_effect.z > 0) )
@@ -307,9 +316,6 @@ Vec3f parser::Scene::lightItUp(Intersection& intersection, int level)
 		Ray mirror_ray(intersection.hitPoint(), w_r);
 		mirror_intensity = mirror_effect * castRay(mirror_ray, level+1);
 	}
-
-	Vec3f ambient_intensity = ambient_light*materials[intersection.material_id].ambient;
-	Vec3f diffuse_specular_intensity = getDiffuseSpecular(intersection);
 
 	return ambient_intensity + diffuse_specular_intensity + mirror_intensity;
 }
@@ -331,12 +337,14 @@ Vec3f parser::Scene::getDiffuseSpecular(Intersection& intersection)
 		if (is_facing_light)
 		{
 			Point shadow_ray_origin = intersection_point + (light_direction * shadow_ray_epsilon);
-			Ray shadow_ray(shadow_ray_origin, light_vector);
+			Ray shadow_ray(shadow_ray_origin, light_direction);
 			Intersection shadow_intersection = getIntersection(shadow_ray);
 			// If in shadow, calculate other lights
-			if (shadow_intersection.intersected() && shadow_intersection.t < 1)
+			if (shadow_intersection.intersected())
 			{
-				continue;
+				float shadow_distance = (shadow_intersection.hitPoint() - shadow_ray_origin).length();
+				if(shadow_distance < light_distance - shadow_ray_epsilon)
+					continue;
 			}
 			float cosine = max(0.0f, light_direction.dot(intersection.surfaceNormal));
 
